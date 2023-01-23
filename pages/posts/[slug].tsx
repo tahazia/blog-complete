@@ -5,12 +5,14 @@ import PostBody from '../../components/post-body'
 import Header from '../../components/header'
 import PostHeader from '../../components/post-header'
 import Layout from '../../components/layout'
+import { LoginModal } from '../../components/login-modal'
 import { getPostBySlug, getAllPosts } from '../../lib/api'
 import PostTitle from '../../components/post-title'
 import Head from 'next/head'
 import { CMS_NAME } from '../../lib/constants'
 import markdownToHtml from '../../lib/markdownToHtml'
 import PostType from '../../types/post'
+import {useEffect, useState} from 'react'
 
 type Props = {
   post: PostType
@@ -23,6 +25,20 @@ const Post = ({ post, morePosts, preview }: Props) => {
   if (!router.isFallback && !post?.slug) {
     return <ErrorPage statusCode={404} />
   }
+
+  const [loggedStatus, setLoggedStatus] = useState(false)
+
+  useEffect(() => {
+    localStorage.clear()
+    if (localStorage.getItem('userStatus') && localStorage.getItem('userStatus') === 'true') {
+      setLoggedStatus(true)
+    }
+  }, [])
+
+  if (!loggedStatus) {
+    return <LoginModal />
+  }
+
   return (
     <Layout preview={preview}>
       <Container>
